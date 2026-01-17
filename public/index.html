@@ -1,89 +1,473 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeX Systems | Innovating the Future</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.8.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.8.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.8.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+    
+    :root {
+      --primary: #6366f1;
+      --secondary: #ec4899;
+      --dark-bg: #0f172a;
+      --card-bg: #1e293b;
+      --text-light: #f8fafc;
+      --text-gray: #94a3b8;
+      --gradient: linear-gradient(135deg, #6366f1, #030335);
+    }
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 15px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logo img { height: 70px; width: auto; }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 500;
+      font-size: 16px;
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover { color: var(--primary); }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background: var(--gradient);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover::after { width: 100%; }
+
+    .btn-login {
+      background: var(--gradient);
+      padding: 8px 24px;
+      border-radius: 50px;
+      color: white !important;
+      font-weight: 600;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(1, 2, 57, 0.4);
+    }
+    .btn-login::after { display: none; }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 5%; 
+      background: url('img/background.jpg') no-repeat center center/cover;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 0;
+    }
+
+    .hero-content {
+      max-width: 700px;
+      z-index: 1;
+      position: relative;
+      text-align: left; 
+      animation: slideIn 1s ease-out;
+    }
+
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #fff, #012557);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #e2e8f0;
+      margin-bottom: 40px;
+      line-height: 1.6;
+      max-width: 90%; 
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-start; 
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 14px 35px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(5px);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-3px);
+    }
+
+    .section {
+      padding: 100px 5%;
+      background: #0f172a;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 60px;
+      color: white;
+    }
+    .section-title span { color: var(--primary); }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .card i {
+      font-size: 40px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .card p {
+      color: var(--text-gray);
+      font-size: 15px;
+    }
+    .contact-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .form-group { margin-bottom: 20px; }
+
+    .form-input {
+      width: 100%;
+      padding: 15px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: var(--gradient);
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-submit:hover { opacity: 0.9; transform: scale(1.02); }
+
+    footer {
+      background: #020617;
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-gray);
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      background: var(--card-bg);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      transform: translateY(100px);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+      border-left: 4px solid var(--primary);
+    }
+    .toast.show { transform: translateY(0); }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+        background: #0f172a;
       }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      .nav-links {
+        width: 100%;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a { font-size: 14px; }
+    
+      .hero { justify-content: center; text-align: center; }
+      .hero-content { text-align: center; margin-left: 0; } 
+      .hero-buttons { justify-content: center; }
+      
+      .hero h1 { font-size: 36px; }
+      .hero p { font-size: 16px; margin-left: auto; margin-right: auto; }
+      
+      .btn { width: 100%; text-align: center; }
+
+      .section { padding: 60px 20px; }
+      .contact-container { padding: 25px; }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="#" class="logo">
+      <img src="img/logoo.png" alt="CodeX Systems">
+    </a>
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#contact">Contact</a>
+      <a href="login.html" class="btn-login">Login</a>
+    </div>
+  </nav>
+
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <h1>Innovating the Future with <br><span style="color: #6366f1;">CodeX Systems</span></h1>
+      <p>We design intelligent digital solutions that help businesses grow, adapt, and thrive in a fast-changing world.</p>
+      <div class="hero-buttons">
+        <a href="apply.html" class="btn btn-primary">Join Our Team</a>
+        <a href="#about" class="btn btn-secondary">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="services">
+    <h2 class="section-title">What We <span>Do</span></h2>
+    <div class="grid-container">
+      <div class="card">
+        <i class="fa-solid fa-code"></i>
+        <h3>Web Development</h3>
+        <p>Building responsive, fast, and secure websites tailored to your business needs using modern frameworks.</p>
+      </div>
+      <div class="card">
+        <i class="fa-solid fa-mobile-screen"></i>
+        <h3>Mobile Apps</h3>
+        <p>Creating seamless mobile experiences for iOS and Android that engage users and drive growth.</p>
+      </div>
+      <div class="card">
+        <i class="fa-solid fa-cloud"></i>
+        <h3>Cloud Solutions</h3>
+        <p>Reliable and scalable cloud infrastructure services to ensure your data is safe and accessible.</p>
+      </div>
+      <div class="card">
+        <i class="fa-solid fa-headset"></i>
+        <h3>24/7 Support</h3>
+        <p>Our dedicated support team is always available to ensure your systems run smoothly without interruption.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <h2 class="section-title">Get in <span>Touch</span></h2>
+    <div class="contact-container">
+      <form id="contactForm">
+        <div class="form-group">
+          <input type="text" id="name" class="form-input" placeholder="Your Name" required>
+        </div>
+        <div class="form-group">
+          <input type="email" id="email" class="form-input" placeholder="Your Email" required>
+        </div>
+        <div class="form-group">
+          <textarea id="message" class="form-input" rows="5" placeholder="How can we help you?" required></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Send Message</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 CodeX Systems. All rights reserved.</p>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7-0DHmxBz1ULh4ApnyuVTHAwENv1raSE",
+      authDomain: "hr-solution-2da5e.firebaseapp.com",
+      databaseURL: "https://hr-solution-2da5e-default-rtdb.firebaseio.com",
+      projectId: "hr-solution-2da5e",
+      storageBucket: "hr-solution-2da5e.appspot.com",
+      messagingSenderId: "735828723473",
+      appId: "1:735828723473:web:55ccbc99c15575f177eeb0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const contactForm = document.getElementById('contactForm');
+    const toast = document.getElementById('toast');
+
+    function showToast(message, type = 'success') {
+      toast.textContent = message;
+      toast.style.borderLeftColor = type === 'success' ? '#22c55e' : '#ef4444';
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    if (contactForm) {
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = contactForm.querySelector('button');
+        btn.textContent = "Sending...";
+        btn.disabled = true;
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const messageText = document.getElementById('message').value.trim();
 
         try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+          const newMsgRef = push(ref(db, "contactMessages"));
+          await set(newMsgRef, {
+            name,
+            email,
+            message: messageText,
+            timestamp: new Date().toISOString()
+          });
+          contactForm.reset();
+          showToast("Message sent successfully!");
+        } catch (err) {
+          console.error('Error:', err);
+          showToast("Failed to send message.", "error");
+        } finally {
+          btn.textContent = "Send Message";
+          btn.disabled = false;
         }
       });
-    </script>
-  </body>
+    }
+  </script>
+
+</body>
 </html>
