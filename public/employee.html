@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Portal</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; }
+        
+        body { 
+            background: #C8D2E5; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            padding: 40px; 
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #f3f4f6;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .user-info h2 { color: #0B074A; margin-bottom: 5px; }
+        .user-info p { color: #666; }
+        
+        .logout-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .logout-btn:hover { background: #b91c1c; }
+
+        /* GRID LAYOUT */
+        .grid-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        /* CLOCK SECTION */
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        
+        .clock-display {
+            font-size: 42px;
+            font-weight: 800;
+            color: #0B074A;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .clock-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-clock {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 16px;
+            color: white;
+        }
+        .btn-in { background: #16a34a; }
+        .btn-in:hover { background: #15803d; }
+        .btn-out { background: #dc2626; }
+        .btn-out:hover { background: #b91c1c; }
+
+        /* LEAVE FORM */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #333; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            background: #0B074A;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+
+        /* HISTORY LIST */
+        .history-section { margin-top: 40px; }
+        .history-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #ddd;
+        }
+        
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-Pending { background: #fef3c7; color: #d97706; border: 1px solid #d97706; }
+        .status-Approved { background: #dcfce7; color: #16a34a; border: 1px solid #16a34a; border-left-color: #16a34a; }
+        .status-Rejected { background: #fee2e2; color: #dc2626; border: 1px solid #dc2626; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="header">
+        <div class="user-info">
+            <h2 id="empName">Loading...</h2>
+            <p id="empEmail">...</p>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+
+    <div class="grid-row">
+        
+        <div class="card">
+            <h3 style="margin-bottom: 20px; color: #666;">Daily Attendance</h3>
+            <div class="clock-display" id="clock">00:00:00</div>
+            <div class="clock-actions">
+                <button class="btn-clock btn-in" onclick="recordAttendance('Time In')">Clock In</button>
+                <button class="btn-clock btn-out" onclick="recordAttendance('Time Out')">Clock Out</button>
+            </div>
+            <p id="attendanceMsg" style="text-align: center; margin-top: 15px; font-weight: bold; color: green;"></p>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 20px; color: #666;">File a Leave</h3>
+            
+            <div class="form-group">
+                <label>Leave Type</label>
+                <select id="leaveType">
+                    <option>Sick Leave</option>
+                    <option>Vacation Leave</option>
+                    <option>Emergency Leave</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex:1;">
+                    <label>Start Date</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>End Date</label>
+                    <input type="date" id="endDate">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Reason</label>
+                <textarea id="leaveReason" rows="2" placeholder="Brief reason..."></textarea>
+            </div>
+
+            <button class="btn-submit" onclick="submitLeave()">Submit Request</button>
+        </div>
+
+    </div>
+
+    <div class="history-section">
+        <h3>My Request History</h3>
+        <div id="requestList">
+            <p style="color: #888; margin-top: 10px;">Loading history...</p>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB7-0DHmxBz1ULh4ApnyuVTHAwENv1raSE",
+        authDomain: "hr-solution-2da5e.firebaseapp.com",
+        projectId: "hr-solution-2da5e",
+        storageBucket: "hr-solution-2da5e.appspot.com",
+        messagingSenderId: "735828723473",
+        appId: "1:735828723473:web:55ccbc99c15575f177eeb0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUser = null;
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById("empName").textContent = user.displayName || "Employee";
+            document.getElementById("empEmail").textContent = user.email;
+            loadMyHistory(user.email);
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+    setInterval(() => {
+        document.getElementById("clock").textContent = new Date().toLocaleTimeString();
+    }, 1000);
+    window.recordAttendance = function(type) {
+        if (!currentUser) return;
+        const now = new Date();
+        
+        push(ref(db, 'attendance'), {
+            empId: currentUser.uid,
+            name: currentUser.displayName || currentUser.email,
+            date: now.toISOString().split('T')[0],
+            timeIn: type === "Time In" ? now.toLocaleTimeString() : null,
+            timeOut: type === "Time Out" ? now.toLocaleTimeString() : null,
+            status: type === "Time In" ? (now.getHours() > 9 ? "Late" : "Present") : "Checked Out"
+        }).then(() => {
+            const msg = document.getElementById("attendanceMsg");
+            msg.textContent = `✅ ${type} Recorded Successfully!`;
+            setTimeout(() => msg.textContent = "", 3000);
+        });
+    };
+    window.submitLeave = function() {
+        const type = document.getElementById("leaveType").value;
+        const start = document.getElementById("startDate").value;
+        const end = document.getElementById("endDate").value;
+        const reason = document.getElementById("leaveReason").value;
+
+        if (!start || !end || !reason) {
+            alert("Please fill in all fields.");
+            return;
+        }
+        const messageData = {
+            type: "Leave Request",
+            subject: `${type} (${start} to ${end})`, 
+            content: reason,
+            from: currentUser.email,
+            fromName: currentUser.displayName || "Employee",
+            status: "Pending",
+            timestamp: new Date().toISOString(),
+            date: new Date().toLocaleDateString(),
+            time: new Date().toLocaleTimeString()
+        };
+        push(ref(db, 'messages'), messageData)
+            .then(() => {
+                alert("Request Sent to HR!");
+                document.getElementById("leaveReason").value = "";
+                document.getElementById("startDate").value = "";
+                document.getElementById("endDate").value = "";
+            })
+            .catch(err => alert("Error: " + err.message));
+    };
+    function loadMyHistory(myEmail) {
+        onValue(ref(db, 'messages'), (snapshot) => {
+            const list = document.getElementById("requestList");
+            list.innerHTML = "";
+            const data = snapshot.val();
+
+            if (data) {
+                const myRequests = Object.values(data)
+                    .filter(msg => msg.from === myEmail)
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+                if (myRequests.length === 0) {
+                    list.innerHTML = "<p>No requests found.</p>";
+                    return;
+                }
+
+                myRequests.forEach(req => {
+                    const div = document.createElement("div");
+                    div.className = "history-item";
+                    let color = "#f59e0b";
+                    if(req.status === "Approved") color = "#10b981";
+                    if(req.status === "Rejected") color = "#ef4444"; 
+                    div.style.borderLeft = `5px solid ${color}`;
+
+                    div.innerHTML = `
+                        <div>
+                            <h4 style="margin-bottom:5px;">${req.subject}</h4>
+                            <p style="font-size:13px; color:#666;">${req.content}</p>
+                            <small style="color:#aaa;">${req.date}</small>
+                        </div>
+                        <span class="status-badge status-${req.status}">${req.status}</span>
+                    `;
+                    list.appendChild(div);
+                });
+            } else {
+                list.innerHTML = "<p>No request history.</p>";
+            }
+        });
+    }
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        signOut(auth).then(() => window.location.href = "login.html");
+    });
+
+</script>
+
+</body>
+</html>

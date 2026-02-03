@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <style>
+        /* =========================================
+           1. GLOBAL RESET
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Inter", sans-serif; }
+        
+        body { 
+            display: flex; 
+            justify-content: center; 
+            background: #C8D2E5; /* Lavender Background */
+            height: 100vh; 
+            overflow: hidden; /* Prevents whole page scroll */
+        }
+
+        .app-container { 
+            width: 1728px; 
+            background: #C8D2E5; 
+            position: relative; 
+            height: 100vh; 
+        }
+
+        /* =========================================
+           2. FIXED HEADER
+           ========================================= */
+        .top-header { 
+            width: 100%; 
+            height: 100px; 
+            background: #6078D1; /* Purple */
+            position: fixed; /* FIXED POSITION */
+            top: 0; 
+            left: 0; 
+            z-index: 50; 
+            display: flex; 
+            align-items: center; 
+            padding-left: 340px; 
+            padding-right: 60px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .content-header { 
+            width: 100%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
+        
+        .search-container { 
+            width: 650px; 
+            height: 50px; 
+            background: transparent; 
+            border: 3px solid #fff; 
+            border-radius: 30px; 
+            padding: 0 25px; 
+            display: flex; 
+            align-items: center; 
+        }
+        
+        .search-input { 
+            flex-grow: 1; 
+            font-size: 24px; 
+            font-weight: 700; 
+            color: white; 
+            background: transparent; 
+            border: none; 
+            outline: none; 
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.7); }
+        
+        .header-icons { display: flex; gap: 30px; }
+        .header-icon { width: 35px; cursor: pointer; transition: 0.2s; }
+        .header-icon:hover { opacity: 0.7; }
+
+        /* =========================================
+           3. FIXED SIDEBAR
+           ========================================= */
+        .sidebar { 
+    position: fixed; 
+    left: 30px; 
+    top: 10px; 
+    width: 240px;
+    height: calc(100vh - 30px); 
+    max-height: 970px; 
+    background: #0B074A; 
+    border-radius: 20px; 
+    padding: 30px 0; 
+    z-index: 100; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    overflow-y: auto; 
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+        .logo-container { width: 130px; height: auto; margin-bottom: 30px; flex-shrink: 0; }
+        .logo { width: 100%; }
+        
+        .user-profile { text-align: center; margin-bottom: 60px; width: 100%; flex-shrink: 0; }
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; overflow: hidden; margin: auto; border: 3px solid rgba(255,255,255,0.1); }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-name { color: #fff; font-weight: 700; font-size: 16px; margin-top: 15px; font-style: italic; }
+        .user-role { color: #fff; font-weight: 700; font-size: 18px; margin-top: 5px; font-style: italic; text-transform: uppercase; }
+
+        /* NAV MENU */
+        .nav-menu { width: 100%; display: flex; flex-direction: column; gap: 15px; padding: 0 15px; flex-grow: 1; }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; cursor: pointer; color: white; transition: 0.2s; border-radius: 12px; flex-shrink: 0; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .nav-item.active { background: #1C1789; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
+        .nav-icon { width: 28px; height: 28px; flex-shrink: 0; }
+        .nav-text { font-size: 18px; font-weight: 700; font-style: italic; }
+        
+        .logout-container { margin-top: auto; width: 100%; padding: 20px 15px 0 15px; flex-shrink: 0; }
+
+        /* =========================================
+           4. SCROLLABLE MAIN CONTENT
+           ========================================= */
+        .main-content { 
+            position: absolute; 
+            top: 0; 
+            left: 300px; /* Offset for Sidebar */
+            width: calc(100% - 300px); 
+            height: 100vh; /* Full Height */
+            padding: 40px 60px; 
+            padding-top: 140px; /* Offset for Header */
+            overflow-y: auto; /* ALLOWS SCROLLING HERE */
+            padding-bottom: 100px; 
+        }
+
+        /* SECTIONS */
+        .employee-management-section, .applicants-section, .messenger-section { display: none; }
+        .section-visible { display: block; animation: fadeIn 0.3s ease; }
+
+        /* =========================================
+           5. DASHBOARD NAVIGATION (Dropdowns)
+           ========================================= */
+        .dash-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .dash-icon { width: 30px; height: 30px; }
+        .dash-title { font-size: 24px; font-weight: 800; font-style: italic; color: #000; }
+
+        .dash-nav-row { display: flex; gap: 30px; align-items: flex-start; }
+        .nav-group { display: flex; flex-direction: column; gap: 10px; }
+
+        .dash-btn {
+            background: #100c4a; /* Deep Blue */
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 24px;
+            font-weight: 700;
+            font-style: italic;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 240px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: 0.2s;
+        }
+        .dash-btn:hover { background: #1C1789; }
+        .dash-btn i { font-size: 18px; margin-left: 15px; transition: transform 0.3s; }
+        .dash-btn.open i { transform: rotate(180deg); }
+
+        .sub-btn {
+            background: #1C1789;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            font-size: 22px;
+            font-weight: 700;
+            font-style: italic;
+            cursor: pointer;
+            text-align: center;
+            display: none; /* Hidden by default */
+            animation: slideDown 0.3s ease;
+        }
+        .sub-btn.show { display: block; }
+        .sub-btn:hover { background: #2e28a5; }
+
+        .count-badge { margin-right: 10px; }
+
+        /* =========================================
+           6. MODERN TABLE STYLING
+           ========================================= */
+        .table-container { 
+            margin-top: 50px; 
+            background: #fff; /* White Background */
+            border-radius: 20px; /* Rounded Corners */
+            overflow: hidden; /* Clips content to rounded corners */
+            display: none; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Soft Shadow */
+        }
+        .table-container.active { display: block; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { 
+            padding: 25px; 
+            background: #f3f3f3; /* Light Gray Header */
+            font-size: 20px; 
+            font-weight: 800; /* Bold Text */
+            color: #333; 
+            text-align: left;
+        }
+        td { 
+            padding: 20px; 
+            font-size: 18px; 
+            border-bottom: 1px solid #eee; /* Light separator */
+            color: #000;
+        }
+        tr:hover td { background: #f9f9f9; } /* Hover Effect */
+
+        /* =========================================
+           7. MESSENGER & APPLICANTS
+           ========================================= */
+        .messages-container { background: white; border: 3px solid #000; border-radius: 20px; padding: 40px; margin-top: 40px; max-height: 600px; overflow-y: auto; }
+        .message-item { padding: 25px; border: 2px solid #ddd; border-radius: 15px; margin-bottom: 20px; background: #f9f9f9; }
+        .message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .message-type { background: #6078D1; color: white; padding: 8px 20px; border-radius: 20px; font-weight: bold; }
+        .message-status { font-weight: bold; padding: 5px 15px; border-radius: 15px; }
+        .status-pending { background: #fbbf24; color: black; }
+        .status-approved { background: #22c55e; color: white; }
+        .status-rejected { background: #ef4444; color: white; }
+        .message-actions { margin-top: 15px; display: flex; gap: 10px; }
+        .action-btn { padding: 10px 20px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; color: white; }
+        .btn-approve { background: #22c55e; }
+        .btn-reject { background: #ef4444; }
+
+        .applicant-list { display: flex; flex-direction: column; gap: 20px; }
+        .applicant-card { background: #D9D9D9; border-radius: 20px; padding: 20px 30px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .applicant-card:hover { background: #e5e5e5; }
+        .app-left { display: flex; align-items: center; gap: 20px; }
+        .app-avatar { width: 60px; height: 60px; border-radius: 50%; background: #2dd4bf; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: #000; }
+        .app-info h3 { margin: 0; font-size: 20px; }
+        .app-role { margin: 5px 0 0 0; font-size: 14px; }
+
+        /* SCANNER MODAL */
+        #scanner-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 999; justify-content: center; align-items: center; }
+        .scanner-box { background: #D9D9D9; padding: 30px; border-radius: 30px; width: 650px; text-align: center; }
+        #reader { width: 100%; height: 400px; background: #000; border-radius: 20px; overflow: hidden; margin-bottom: 20px; }
+        .close-scanner { padding: 12px 50px; background: #dc2626; color: white; border: none; border-radius: 15px; font-size: 20px; font-weight: bold; cursor: pointer; }
+
+        /* DETAIL VIEW */
+        #applicantDetailView { display: none; }
+        .detail-card { background: #D9D9D9; border-radius: 30px; padding: 50px; width: 100%; max-width: 1000px; margin-top: 20px; display: flex; flex-direction: column; align-items: center; }
+        .detail-header-content { display: flex; gap: 30px; align-items: center; width: 100%; }
+        .detail-avatar-large { width: 100px; height: 100px; border-radius: 50%; background: #2dd4bf; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; }
+        .documents-row { display: flex; gap: 60px; margin: 40px 0; }
+        .doc-item { text-align: center; cursor: pointer; }
+        .doc-icon { font-size: 50px; }
+
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <div class="top-header">
+        <div class="content-header">
+            <div class="search-container"><input class="search-input" placeholder="Search....."></div>
+            <div class="header-icons">
+                <img src="src/assets/notif.png" class="header-icon">
+                <img src="src/assets/email.png" class="header-icon">
+                <img src="src/assets/settings.png" class="header-icon">
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="logo-container"><img src="src/assets/logo.png" class="logo" /></div>
+        <div class="user-profile">
+            <div class="profile-avatar"><img id="hrPhoto" src="src/assets/profile.png"></div>
+            <div id="hrName" class="user-name">Loading...</div>
+            <div id="hrRole" class="user-role">HR</div>
+        </div>
+
+        <div class="nav-menu">
+            <div class="nav-item active" id="dashboardNav">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                <span class="nav-text">Dashboard</span>
+            </div>
+            <div class="nav-item" id="messengerNav">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M2 21L23 12L2 3V10L17 12L2 14V21Z"/></svg>
+                <span class="nav-text">Messenger</span>
+            </div>
+            <div class="nav-item" id="employeeNav">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21C20 16.5817 16.4183 13 12 13C7.58172 13 4 16.5817 4 21"/><rect x="18" y="6" width="4" height="4" rx="1" stroke="white" stroke-width="1.5"/></svg>
+                <span class="nav-text">Employee</span>
+            </div>
+            <div class="nav-item" id="applicantsNav">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21C3 17.134 6.13401 14 10 14"/><circle cx="17" cy="7" r="4"/><path d="M14 21C14 17.134 17.134 14 21 14"/></svg>
+                <span class="nav-text" id="applicantsCount">Applicants (0)</span>
+            </div>
+        </div>
+
+        <div class="logout-container">
+            <div class="nav-item" id="logoutBtn">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"/><path d="M16 17L21 12L16 7"/><path d="M21 12H9"/></svg>
+                <span class="nav-text">Logout</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <div class="employee-management-section section-visible" id="dashboardSection">
+            <div class="dash-header">
+                <svg class="dash-icon" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3"><path d="M3 21h18M5 21V7l8-4 8 4v14M9 10a2 2 0 1 1-4 0v10h4V10z" /></svg>
+                <h2 class="dash-title">Employee Management</h2>
+            </div>
+
+            <div class="dash-nav-row">
+                
+                <div class="nav-group">
+                    <button class="dash-btn" id="btn-attendance" onclick="toggleDropdown('attendance')">
+                        Attendance <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <button class="sub-btn" id="sub-attendance" onclick="startScanner()">SCAN qr</button>
+                </div>
+
+                <div class="nav-group">
+                    <button class="dash-btn" id="btn-leave" onclick="toggleDropdown('leave')">
+                        <span><span class="count-badge" id="leaveCounter">0</span> Leave</span> <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <button class="sub-btn" id="sub-leave" onclick="showApplications()"> 
+                        <span class="count-badge" id="appCounterBtn">0</span> Applications
+                    </button>
+                </div>
+
+                <button class="dash-btn" id="btn-payroll" onclick="showTable('payroll')">
+                    Payroll
+                </button>
+
+                <button class="dash-btn" id="btn-employee" onclick="showTable('employee')">
+                    <span><span class="count-badge" id="empCounter">0</span> Employee</span>
+                </button>
+            </div>
+
+            <div class="table-container active" id="attendance-table">
+                <table><thead><tr><th>ID</th><th>Name</th><th>Date</th><th>Time In</th><th>Time Out</th><th>Status</th></tr></thead><tbody id="attendanceData"></tbody></table>
+            </div>
+            <div class="table-container" id="leave-table">
+                <table><thead><tr><th>ID</th><th>Name</th><th>Type</th><th>Start</th><th>End</th><th>Status</th></tr></thead><tbody id="leaveData"></tbody></table>
+            </div>
+            <div class="table-container" id="payroll-table">
+                <table><thead><tr><th>ID</th><th>Name</th><th>Period</th><th>Basic</th><th>Net Pay</th></tr></thead><tbody><tr><td>EMP001</td><td>Mark Anthony</td><td>Jan 2024</td><td>$5000</td><td>$4500</td></tr></tbody></table>
+            </div>
+            <div class="table-container" id="employee-table">
+                <table><thead><tr><th>ID</th><th>Name</th><th>Dept</th><th>Position</th><th>Email</th><th>Status</th></tr></thead><tbody id="employeeData"></tbody></table>
+            </div>
+        </div>
+
+        <div class="messenger-section" id="messengerSection">
+            <div class="section-header"><h2 class="section-title">Employee Messages / Applications</h2></div>
+            <div class="messages-container"><div id="hrMessagesList"></div></div>
+        </div>
+
+        <div class="applicants-section" id="applicantsSection">
+            <div class="section-header"><h2 class="section-title">Job Applicants</h2></div>
+            <div class="applicant-list" id="applicantsListContainer"></div>
+        </div>
+
+        <div id="applicantDetailView">
+            <div class="breadcrumb" onclick="closeApplicantDetail()">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3"><path d="M3 21h18M5 21V7l8-4 8 4v14M9 10a2 2 0 1 1-4 0v10h4V10z" /></svg>
+                <span>Applicants > </span> <span class="current" id="detailHeaderName">Name</span>
+            </div>
+            <div class="detail-card">
+                <div class="detail-header-content">
+                    <div class="detail-avatar-large" id="detailAvatar">A</div>
+                    <div class="detail-text-info"><div class="detail-name" id="detailName">Name</div><div class="detail-email" id="detailEmail">email@example.com</div></div>
+                </div>
+                <div class="detail-message-box"><p id="detailMessage">...</p></div>
+                <div class="divider-line"></div>
+                <div class="documents-row">
+                    <div class="doc-item" id="resumeDocBtn"><i class="fa-solid fa-file-pdf doc-icon"></i><span class="doc-label" id="docResumeLabel">Resume.pdf</span></div>
+                </div>
+                <div style="margin-top: 40px; display: flex; gap: 20px;">
+                    <button class="action-btn btn-approve" id="btnHire">Hire</button>
+                    <button class="action-btn btn-reject" id="btnDecline">Decline</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="scanner-modal">
+        <div class="scanner-box">
+            <h2 class="scanner-title">SCANNER</h2>
+            <div id="reader"></div>
+            <button class="close-scanner" onclick="stopScanner()">Close</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, update, push, remove, get, child } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB7-0DHmxBz1ULh4ApnyuVTHAwENv1raSE",
+        authDomain: "hr-solution-2da5e.firebaseapp.com",
+        projectId: "hr-solution-2da5e",
+        storageBucket: "hr-solution-2da5e.appspot.com",
+        messagingSenderId: "735828723473",
+        appId: "1:735828723473:web:55ccbc99c15575f177eeb0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    const hrName = document.getElementById("hrName");
+    const hrPhoto = document.getElementById("hrPhoto");
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            hrName.textContent = user.displayName || "HR User";
+            hrPhoto.src = user.photoURL || "src/assets/profile.png";
+        } else {
+            window.location.href = "login.html";
+        }
+    });
+
+    const logout = () => signOut(auth).then(() => window.location.href = "login.html");
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+
+    // NAVIGATION
+    const dashboardNav = document.getElementById("dashboardNav");
+    const messengerNav = document.getElementById("messengerNav");
+    const applicantsNav = document.getElementById("applicantsNav");
+    const employeeNav = document.getElementById("employeeNav");
+
+    const dashboardSection = document.getElementById("dashboardSection");
+    const messengerSection = document.getElementById("messengerSection");
+    const applicantsSection = document.getElementById("applicantsSection");
+    const applicantDetailView = document.getElementById("applicantDetailView");
+
+    function setActive(element) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+    }
+
+    function hideAll() {
+        dashboardSection.classList.remove("section-visible");
+        messengerSection.classList.remove("section-visible");
+        applicantsSection.classList.remove("section-visible");
+        applicantDetailView.style.display = "none";
+    }
+
+    dashboardNav.addEventListener("click", () => { hideAll(); dashboardSection.classList.add("section-visible"); setActive(dashboardNav); });
+    messengerNav.addEventListener("click", () => { hideAll(); messengerSection.classList.add("section-visible"); loadHRMessages(); setActive(messengerNav); });
+    applicantsNav.addEventListener("click", () => { hideAll(); applicantsSection.classList.add("section-visible"); setActive(applicantsNav); });
+    employeeNav.addEventListener("click", () => { hideAll(); dashboardSection.classList.add("section-visible"); showTable('employee'); setActive(employeeNav); });
+
+    // --- DROPDOWN & TABLE LOGIC ---
+    window.toggleDropdown = function(type) {
+        if (type === 'attendance') {
+            const btn = document.getElementById('btn-attendance');
+            const sub = document.getElementById('sub-attendance');
+            btn.classList.toggle('open');
+            sub.classList.toggle('show');
+            showTable('attendance');
+        } else if (type === 'leave') {
+            const btn = document.getElementById('btn-leave');
+            const sub = document.getElementById('sub-leave');
+            btn.classList.toggle('open');
+            sub.classList.toggle('show');
+            showTable('leave');
+        }
+    };
+
+    window.showApplications = function() {
+        hideAll();
+        messengerSection.classList.add("section-visible");
+        loadHRMessages();
+        setActive(messengerNav);
+    };
+
+    window.showTable = function(name) {
+        document.querySelectorAll('.table-container').forEach(t => t.classList.remove('active'));
+        if(document.getElementById(name + '-table')) {
+            document.getElementById(name + '-table').classList.add('active');
+        }
+    };
+
+    // --- SCANNER ---
+    let html5QrCode;
+    window.startScanner = async function() {
+        document.getElementById('scanner-modal').style.display = 'flex';
+        html5QrCode = new Html5Qrcode("reader");
+        try {
+            await html5QrCode.start(
+                { facingMode: "environment" }, { fps: 10, qrbox: { width: 300, height: 300 } },
+                (decodedText) => { alert("Scanned: " + decodedText); window.stopScanner(); },
+                () => {}
+            );
+        } catch (err) { alert("Camera error."); window.stopScanner(); }
+    };
+    window.stopScanner = async function() {
+        if (html5QrCode) { try { await html5QrCode.stop(); html5QrCode.clear(); } catch (err) {} }
+        document.getElementById('scanner-modal').style.display = 'none';
+    };
+
+    // --- DATA ---
+    const employeeTableBody = document.getElementById("employeeData");
+    const attendanceTableBody = document.getElementById("attendanceData");
+    const leaveCounter = document.getElementById("leaveCounter");
+    const appCounterBtn = document.getElementById("appCounterBtn");
+    const empCounter = document.getElementById("empCounter");
+    let usersData = {};
+
+    onValue(ref(database, 'users'), (snap) => {
+        usersData = snap.val() || {};
+        updateEmployeeTable();
+        if(usersData) empCounter.textContent = Object.keys(usersData).length;
+    });
+
+    function updateEmployeeTable() {
+        employeeTableBody.innerHTML = "";
+        if(usersData) {
+            Object.entries(usersData).forEach(([key, emp]) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${key.substring(0,5)}</td><td>${emp.name}</td><td>${emp.department || "-"}</td><td>${emp.position || "-"}</td><td>${emp.email}</td><td style="color:green;font-weight:bold">Active</td>`;
+                employeeTableBody.appendChild(row);
+            });
+        }
+    }
+
+    onValue(ref(database, 'attendance'), (snap) => {
+        attendanceTableBody.innerHTML = "";
+        const data = snap.val();
+        if(data) {
+            Object.values(data).sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(rec => {
+                let shortId = "000";
+                if (usersData) {
+                    const foundEntry = Object.entries(usersData).find(([k, u]) => u.name === rec.name);
+                    if (foundEntry) shortId = foundEntry[0].substring(0, 5).toUpperCase();
+                }
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>EMP-${shortId}</td><td>${rec.name}</td><td>${rec.date}</td><td>${rec.timeIn || "-"}</td><td>${rec.timeOut || "-"}</td><td>${rec.status}</td>`;
+                attendanceTableBody.appendChild(row);
+            });
+        }
+    });
+
+    onValue(ref(database, 'messages'), (snap) => {
+        const data = snap.val();
+        let leaveCount = 0;
+        if(data) {
+            Object.values(data).forEach(msg => {
+                if(msg.type === "Leave Request" && msg.status === "Pending") leaveCount++;
+            });
+        }
+        leaveCounter.textContent = leaveCount;
+        appCounterBtn.textContent = leaveCount;
+    });
+
+    const applicantsListContainer = document.getElementById("applicantsListContainer");
+    const applicantsCount = document.getElementById("applicantsCount");
+
+    onValue(ref(database, 'applicants'), (snapshot) => {
+        applicantsListContainer.innerHTML = "";
+        const data = snapshot.val();
+        if (data) {
+            applicantsCount.textContent = `Applicants (${Object.keys(data).length})`;
+            Object.entries(data).forEach(([key, app]) => {
+                const card = document.createElement("div");
+                card.className = "applicant-card";
+                card.innerHTML = `<div class="app-left"><div class="app-avatar">${app.name.charAt(0)}</div><div class="app-info"><h3>${app.name}</h3><p class="app-role">Applicant</p></div></div>`;
+                card.onclick = () => openApplicantDetail(key, app, "#2dd4bf", app.name.charAt(0));
+                applicantsListContainer.appendChild(card);
+            });
+        }
+    });
+
+    function loadHRMessages() {
+        const list = document.getElementById("hrMessagesList");
+        onValue(ref(database, 'messages'), (snap) => {
+            list.innerHTML = "";
+            const msgs = snap.val();
+            if(!msgs) { list.innerHTML = "<p style='text-align:center'>No messages</p>"; return; }
+            Object.entries(msgs).sort((a,b) => new Date(b[1].timestamp) - new Date(a[1].timestamp)).forEach(([key, msg]) => {
+                const div = document.createElement("div");
+                div.className = "message-item";
+                const isPending = msg.status === "Pending";
+                div.innerHTML = `<div class="message-header"><span class="message-type">${msg.type}</span><span class="message-status status-${msg.status.toLowerCase()}">${msg.status}</span></div><div class="message-from">From: ${msg.fromName}</div><div class="message-content">${msg.content}</div>${isPending ? `<div class="message-actions"><button class="action-btn btn-approve" onclick="window.approveMsg('${key}')">Approve</button><button class="action-btn btn-reject" onclick="window.rejectMsg('${key}')">Reject</button></div>` : ''}`;
+                list.appendChild(div);
+            });
+        });
+    }
+
+    window.openApplicantDetail = (key, app, color, init) => {
+        document.getElementById("applicantDetailView").style.display = "block";
+        applicantsSection.classList.remove("section-visible");
+    };
+    window.closeApplicantDetail = () => {
+        document.getElementById("applicantDetailView").style.display = "none";
+        applicantsSection.classList.add("section-visible");
+    };
+    window.hireApplicant = async function(key) {
+        const snapshot = await get(child(ref(database), `applicants/${key}`));
+        if(snapshot.exists()) {
+            const data = snapshot.val();
+            await push(ref(database, 'users'), { name: data.name, email: data.email, position: data.position, department: "Unassigned", role: "Employee", status: "Active", hiredDate: new Date().toISOString() });
+            await remove(ref(database, `applicants/${key}`));
+            alert(`✅ ${data.name} hired!`);
+        }
+    };
+    window.declineApplicant = async function(key) { await remove(ref(database, `applicants/${key}`)); alert("Declined."); };
+    window.approveMsg = (k) => update(ref(database, `messages/${k}`), {status:"Approved", approvedBy: hrName.textContent});
+    window.rejectMsg = (k) => update(ref(database, `messages/${k}`), {status:"Rejected", rejectedBy: hrName.textContent});
+</script>
+</body>
+</html>
