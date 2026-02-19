@@ -187,17 +187,15 @@
         <div class="content-header">
             <div class="search-container"><input class="search-input" placeholder="Search....."></div>
             <div class="header-icons">
-                <img src="src/assets/notif.png" class="header-icon">
-                <img src="src/assets/email.png" class="header-icon">
-                <img src="src/assets/settings.png" class="header-icon">
+               
             </div>
         </div>
     </div>
 
     <div class="sidebar">
-        <div class="logo-container"><img src="src/assets/logo.png" class="logo" /></div>
+        <div class="logo-container"><img src="src/assets/logo.png" class="logo" alt="Company Logo" /></div>
         <div class="user-profile">
-            <div class="profile-avatar"><img id="empPhoto" src="src/assets/profile.png"></div>
+            <div class="profile-avatar"><img id="empPhoto" src="src/assets/profile.png" alt="Employee Profile Picture"></div>
             <div id="empName" class="user-name">Loading...</div>
             <div id="empRole" class="user-role">EMPLOYEE</div>
         </div>
@@ -291,14 +289,17 @@
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
     import { getDatabase, ref, push, onValue, get, child, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyB7-0DHmxBz1ULh4ApnyuVTHAwENv1raSE",
-        authDomain: "hr-solution-2da5e.firebaseapp.com",
-        projectId: "hr-solution-2da5e",
-        storageBucket: "hr-solution-2da5e.appspot.com",
-        messagingSenderId: "735828723473",
-        appId: "1:735828723473:web:55ccbc99c15575f177eeb0"
-    };
+   const firebaseConfig = {
+  apiKey: "AIzaSyCrZdFPMkDikE5M8Q2V5-Moixvt2jPZGPM",
+  authDomain: "camar-hr.firebaseapp.com",
+  databaseURL: "https://camar-hr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "camar-hr",
+  storageBucket: "camar-hr.firebasestorage.app",
+  messagingSenderId: "760270102206",
+  appId: "1:760270102206:web:c3acfe8d8615f5647788ef",
+  measurementId: "G-25C2JZLZPK"
+};
+
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);

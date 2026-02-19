@@ -166,75 +166,61 @@ body {
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
+  // Using the standard CDN for reliability
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB7-0DHmxBz1ULh4ApnyuVTHAwENv1raSE",
-  authDomain: "hr-solution-2da5e.firebaseapp.com",
-  projectId: "hr-solution-2da5e",
-  storageBucket: "hr-solution-2da5e.appspot.com",
-  messagingSenderId: "735828723473",
-  appId: "1:735828723473:web:55ccbc99c15575f177eeb0"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyCrZdFPMkDikE5M8Q2V5-Moixvt2jPZGPM",
+    authDomain: "camar-hr.firebaseapp.com",
+    databaseURL: "https://camar-hr-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "camar-hr",
+    storageBucket: "camar-hr.firebasestorage.app",
+    messagingSenderId: "760270102206",
+    appId: "1:760270102206:web:c3acfe8d8615f5647788ef"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-const form = document.getElementById("applicationForm");
-const statusText = document.getElementById("status");
-const submitBtn = document.getElementById("submitBtn");
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Sending...";
-
-  statusText.style.color = "#bfdbfe";
-  statusText.textContent = "Submitting application...";
-
-  // 1. Get Values
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const position = document.getElementById("position").value;
-  const message = document.getElementById("message").value.trim();
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
   
-  // 2. Mock File Upload (Since we don't have Storage setup in this snippet)
-  // We just grab the filename to show it in the Admin Panel later.
-  const resumeInput = document.getElementById("resume");
-  const resumeName = resumeInput.files.length > 0 ? resumeInput.files[0].name : "No Resume Uploaded";
+  // FORCE the database to use the specific URL
+  const db = getDatabase(app, "https://camar-hr-default-rtdb.asia-southeast1.firebasedatabase.app");
 
-  // 3. Push to Database
-  push(ref(db, 'applicants'), {
-    name: name,
-    email: email,
-    phone: phone,
-    position: position,
-    message: message, // Saving the message
-    resumeFile: resumeName, // Saving the filename
-    date: new Date().toISOString().split('T')[0],
-    timestamp: new Date().toISOString()
-  })
-  .then(() => {
-    statusText.style.color = "#4ade80";
-    statusText.textContent = "✅ Submitted successfully!";
+  const form = document.getElementById("applicationForm");
+  const statusText = document.getElementById("status");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
     
-    form.reset();
-    submitBtn.textContent = "Submit Application";
-    submitBtn.disabled = false;
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Sending...";
 
-    // Redirect to Thank You page
-    window.location.href = "thankyou.html";
-  })
-  .catch((error) => {
-    console.error(error);
-    statusText.style.color = "#f87171";
-    statusText.textContent = "❌ Error: " + error.message;
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Submit Application";
+    try {
+      const applicantData = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        position: document.getElementById("position").value,
+        message: document.getElementById("message").value.trim(),
+        appliedAt: new Date().toISOString()
+      };
+
+      // Push to the 'applicants' node
+      await push(ref(db, 'applicants'), applicantData);
+
+      statusText.innerText = "✅ Success! Redirecting...";
+      setTimeout(() => {
+        window.location.href = "thankyou.html";
+      }, 1500);
+
+    } catch (error) {
+      console.error("Firebase Error:", error);
+      statusText.innerText = "❌ Error: " + error.message;
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Application";
+    }
   });
-});
 </script>
 
 </body>

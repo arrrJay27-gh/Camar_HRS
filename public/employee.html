@@ -136,6 +136,16 @@
         .status-Approved { background: #dcfce7; color: #16a34a; border: 1px solid #16a34a; border-left-color: #16a34a; }
         .status-Rejected { background: #fee2e2; color: #dc2626; border: 1px solid #dc2626; }
 
+        /* INLINE STYLE REPLACEMENTS */
+        .card h3 { margin-bottom: 20px; color: #666; }
+        .attendance-msg { text-align: center; margin-top: 15px; font-weight: bold; color: green; }
+        .date-row { display: flex; gap: 10px; }
+        .date-row .form-group { flex: 1; }
+        .history-loading { color: #888; margin-top: 10px; }
+        .request-item-title { margin-bottom: 5px; }
+        .request-item-content { font-size: 13px; color: #666; }
+        .request-item-date { color: #aaa; }
+
     </style>
 </head>
 <body>
@@ -153,41 +163,41 @@
     <div class="grid-row">
         
         <div class="card">
-            <h3 style="margin-bottom: 20px; color: #666;">Daily Attendance</h3>
+            <h3 class="card h3">Daily Attendance</h3>
             <div class="clock-display" id="clock">00:00:00</div>
             <div class="clock-actions">
                 <button class="btn-clock btn-in" onclick="recordAttendance('Time In')">Clock In</button>
                 <button class="btn-clock btn-out" onclick="recordAttendance('Time Out')">Clock Out</button>
             </div>
-            <p id="attendanceMsg" style="text-align: center; margin-top: 15px; font-weight: bold; color: green;"></p>
+            <p id="attendanceMsg" class="attendance-msg"></p>
         </div>
 
         <div class="card">
-            <h3 style="margin-bottom: 20px; color: #666;">File a Leave</h3>
+            <h3 class="card h3">File a Leave</h3>
             
             <div class="form-group">
                 <label>Leave Type</label>
-                <select id="leaveType">
+                <select id="leaveType" title="Select leave type">
                     <option>Sick Leave</option>
                     <option>Vacation Leave</option>
                     <option>Emergency Leave</option>
                 </select>
             </div>
 
-            <div style="display: flex; gap: 10px;">
-                <div class="form-group" style="flex:1;">
+            <div class="date-row">
+                <div class="form-group">
                     <label>Start Date</label>
-                    <input type="date" id="startDate">
+                    <input type="date" id="startDate" title="Select start date">
                 </div>
-                <div class="form-group" style="flex:1;">
+                <div class="form-group">
                     <label>End Date</label>
-                    <input type="date" id="endDate">
+                    <input type="date" id="endDate" title="Select end date">
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Reason</label>
-                <textarea id="leaveReason" rows="2" placeholder="Brief reason..."></textarea>
+                <textarea id="leaveReason" rows="2" placeholder="Brief reason..." title="Enter reason for leave"></textarea>
             </div>
 
             <button class="btn-submit" onclick="submitLeave()">Submit Request</button>
@@ -198,7 +208,7 @@
     <div class="history-section">
         <h3>My Request History</h3>
         <div id="requestList">
-            <p style="color: #888; margin-top: 10px;">Loading history...</p>
+            <p class="history-loading">Loading history...</p>
         </div>
     </div>
 
@@ -210,13 +220,16 @@
     import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-database.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyB7-0DHmxBz1ULh4ApnyuVTHAwENv1raSE",
-        authDomain: "hr-solution-2da5e.firebaseapp.com",
-        projectId: "hr-solution-2da5e",
-        storageBucket: "hr-solution-2da5e.appspot.com",
-        messagingSenderId: "735828723473",
-        appId: "1:735828723473:web:55ccbc99c15575f177eeb0"
-    };
+  apiKey: "AIzaSyCrZdFPMkDikE5M8Q2V5-Moixvt2jPZGPM",
+  authDomain: "camar-hr.firebaseapp.com",
+  databaseURL: "https://camar-hr-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "camar-hr",
+  storageBucket: "camar-hr.firebasestorage.app",
+  messagingSenderId: "760270102206",
+  appId: "1:760270102206:web:c3acfe8d8615f5647788ef",
+  measurementId: "G-25C2JZLZPK"
+};
+
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -309,9 +322,9 @@
 
                     div.innerHTML = `
                         <div>
-                            <h4 style="margin-bottom:5px;">${req.subject}</h4>
-                            <p style="font-size:13px; color:#666;">${req.content}</p>
-                            <small style="color:#aaa;">${req.date}</small>
+                            <h4 class="request-item-title">${req.subject}</h4>
+                            <p class="request-item-content">${req.content}</p>
+                            <small class="request-item-date">${req.date}</small>
                         </div>
                         <span class="status-badge status-${req.status}">${req.status}</span>
                     `;
